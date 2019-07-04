@@ -93,9 +93,10 @@ public abstract class AbstractServiceConfig extends AbstractInterfaceConfig {
     protected String accesslog;
 
     /**
-     * The protocol list the service will export with
+     * 协议配置
      */
     protected List<ProtocolConfig> protocols;
+
     protected String protocolIds;
 
     // max allowed execute times

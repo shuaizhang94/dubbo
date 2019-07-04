@@ -192,8 +192,9 @@ public class RegistryProtocol implements Protocol {
 
     @Override
     public <T> Exporter<T> export(final Invoker<T> originInvoker) throws RpcException {
+        //获取注册中心URL
         URL registryUrl = getRegistryUrl(originInvoker);
-        // url to export locally
+        //
         URL providerUrl = getProviderUrl(originInvoker);
 
         // Subscribe the override data
@@ -205,22 +206,30 @@ public class RegistryProtocol implements Protocol {
         overrideListeners.put(overrideSubscribeUrl, overrideSubscribeListener);
 
         providerUrl = overrideUrlWithConfig(providerUrl, overrideSubscribeListener);
-        //export invoker
+
+        //本地暴露
         final ExporterChangeableWrapper<T> exporter = doLocalExport(originInvoker, providerUrl);
 
-        // url to registry
+        //获取注册中心注册器
         final Registry registry = getRegistry(originInvoker);
+
+        //获得注册提供者的URL
         final URL registeredProviderUrl = getRegisteredProviderUrl(providerUrl, registryUrl);
+
+
+        //向本地注册表注册自己
         ProviderInvokerWrapper<T> providerInvokerWrapper = ProviderConsumerRegTable.registerProvider(originInvoker,
                 registryUrl, registeredProviderUrl);
         //to judge if we need to delay publish
+
         boolean register = registeredProviderUrl.getParameter("register", true);
         if (register) {
+            //注册URL
             register(registryUrl, registeredProviderUrl);
             providerInvokerWrapper.setReg(true);
         }
 
-        // Deprecated! Subscribe to override rules in 2.6.x or before.
+        //订阅
         registry.subscribe(overrideSubscribeUrl, overrideSubscribeListener);
 
         exporter.setRegisterUrl(registeredProviderUrl);

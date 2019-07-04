@@ -46,21 +46,19 @@ import static org.apache.dubbo.config.Constants.TEST_ENVIRONMENT;
 
 
 /**
- * The application info
- *
- * @export
+ * 应用配置信息
  */
 public class ApplicationConfig extends AbstractConfig {
 
     private static final long serialVersionUID = 5508512956753757169L;
 
     /**
-     * Application name
+     * 应用名称
      */
     private String name;
 
     /**
-     * The application version
+     * 应用版本号
      */
     private String version;
 
@@ -322,6 +320,7 @@ public class ApplicationConfig extends AbstractConfig {
 
     /**
      * The format is the same as the springboot, including: getQosEnableCompatible(), getQosPortCompatible(), getQosAcceptForeignIpCompatible().
+     *
      * @return
      */
     @Parameter(key = QOS_ENABLE_COMPATIBLE, excluded = true)
