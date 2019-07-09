@@ -23,23 +23,29 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Parameter
+ * 参数注解 用于URL的拼接
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD})
 public @interface Parameter {
 
+    //键
     String key() default "";
 
+    //是否必填
     boolean required() default false;
 
+    //是否忽略
     boolean excluded() default false;
 
+    //会否转移
     boolean escaped() default false;
 
+    //是否为属性
     boolean attribute() default false;
 
+    //是否拼接属性
     boolean append() default false;
 
     /**

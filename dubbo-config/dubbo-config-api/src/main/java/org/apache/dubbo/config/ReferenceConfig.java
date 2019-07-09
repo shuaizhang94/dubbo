@@ -88,10 +88,10 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
      * The {@link Protocol} implementation with adaptive functionality,it will be different in different scenarios.
      * A particular {@link Protocol} implementation is determined by the protocol attribute in the {@link URL}.
      * For example:
-     *
+     * <p>
      * <li>when the url is registry://224.5.6.7:1234/org.apache.dubbo.registry.RegistryService?application=dubbo-sample,
      * then the protocol is <b>RegistryProtocol</b></li>
-     *
+     * <p>
      * <li>when the url is dubbo://224.5.6.7:1234/org.apache.dubbo.config.api.DemoService?application=dubbo-sample, then
      * the protocol is <b>DubboProtocol</b></li>
      * <p>
@@ -241,6 +241,7 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
     }
 
     public synchronized T get() {
+        //检查配置
         checkAndUpdateSubConfigs();
 
         if (destroyed) {
@@ -270,17 +271,21 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
     }
 
     private void init() {
+        //已经初始化 直接返回
         if (initialized) {
             return;
         }
+        //
         checkStubAndLocal(interfaceClass);
         checkMock(interfaceClass);
-        Map<String, String> map = new HashMap<String, String>();
 
+
+        Map<String, String> map = new HashMap<String, String>();
         map.put(SIDE_KEY, CONSUMER_SIDE);
 
         appendRuntimeParameters(map);
         if (!isGeneric()) {
+            //获取版本号
             String revision = Version.getVersion(interfaceClass, version);
             if (revision != null && revision.length() > 0) {
                 map.put(REVISION_KEY, revision);
@@ -291,6 +296,7 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
                 logger.warn("No method found in service interface " + interfaceClass.getName());
                 map.put(METHODS_KEY, ANY_VALUE);
             } else {
+                //追加接口的方法，用","分割
                 map.put(METHODS_KEY, StringUtils.join(new HashSet<String>(Arrays.asList(methods)), COMMA_SEPARATOR));
             }
         }
@@ -303,6 +309,8 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
         appendParameters(map, consumer);
         appendParameters(map, this);
         Map<String, Object> attributes = null;
+
+        //追加方法级别的参数配置
         if (CollectionUtils.isNotEmpty(methods)) {
             attributes = new HashMap<String, Object>();
             for (MethodConfig methodConfig : methods) {
@@ -374,7 +382,7 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
                 }
             } else { // assemble URL from register center's configuration
                 // if protocols not injvm checkRegistry
-                if (!LOCAL_PROTOCOL.equalsIgnoreCase(getProtocol())){
+                if (!LOCAL_PROTOCOL.equalsIgnoreCase(getProtocol())) {
                     checkRegistry();
                     List<URL> us = loadRegistries(false);
                     if (CollectionUtils.isNotEmpty(us)) {

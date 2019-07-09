@@ -29,42 +29,39 @@ import static org.apache.dubbo.rpc.Constants.RETURN_PREFIX;
 import static org.apache.dubbo.rpc.Constants.THROW_PREFIX;
 
 /**
- * AbstractMethodConfig
- *
- * @export
+ * 方法抽象配置
  */
 public abstract class AbstractMethodConfig extends AbstractConfig {
 
     private static final long serialVersionUID = 1L;
 
     /**
-     * The timeout for remote invocation in milliseconds
+     * 方法调用超时时间
      */
     protected Integer timeout;
 
     /**
-     * The retry times
+     * 远程调用尝试次数
      */
     protected Integer retries;
 
     /**
-     * max concurrent invocations
+     * 服务消费者最大调用并发线程
      */
     protected Integer actives;
 
     /**
-     * The load balance
+     * 负载均衡策略
      */
     protected String loadbalance;
 
     /**
-     * Whether to async
-     * note that: it is an unreliable asynchronism that ignores return values and does not block threads.
+     * 是否异步调用，不可靠异步，只是忽略返回值，不阻塞执行线程
      */
     protected Boolean async;
 
     /**
-     * Whether to ack async-sent
+     * 异步调用时，标记sent=true时，表示网络已经发出数据
      */
     protected Boolean sent;
 
@@ -82,14 +79,12 @@ public abstract class AbstractMethodConfig extends AbstractConfig {
     protected String merger;
 
     /**
-     * Cache the return result with the call parameter as key, the following options are available: lru, threadlocal,
-     * jcache, etc.
+     * 以调用参数为key，缓存返回结果，可选：lru, threadlocal, jcache等
      */
     protected String cache;
 
     /**
-     * Whether JSR303 standard annotation validation is enabled or not, if enabled, annotations on method parameters will
-     * be validated
+     * 是否启用JSR303标准注解验证，如果启用，将对方法参数上的注解进行校验
      */
     protected String validation;
 

@@ -46,14 +46,14 @@ import static org.apache.dubbo.common.constants.CommonConstants.DEFAULT_KEY;
 import static org.apache.dubbo.common.constants.CommonConstants.REMOVE_VALUE_PREFIX;
 
 /**
- * Utility methods and public methods for parsing configuration
- *
- * @export
+ * 抽象配置类
  */
 public abstract class AbstractConfig implements Serializable {
 
     protected static final Logger logger = LoggerFactory.getLogger(AbstractConfig.class);
     private static final long serialVersionUID = 4267533505537413570L;
+
+    //=========================================属性校验格式=========================================
 
     /**
      * The maximum length of a <b>parameter's value</b>
@@ -96,12 +96,12 @@ public abstract class AbstractConfig implements Serializable {
     private static final Pattern PATTERN_KEY = Pattern.compile("[*,\\-._0-9a-zA-Z]+");
 
     /**
-     * The legacy properties container
+     * 新老版本properties的映射关系 key:新版 value;老版本
      */
     private static final Map<String, String> LEGACY_PROPERTIES = new HashMap<String, String>();
 
     /**
-     * The suffix container
+     * 配置类的后缀 例如 ServiceConfig和ServiceBean
      */
     private static final String[] SUFFIXES = new String[]{"Config", "Bean"};
 
@@ -115,14 +115,14 @@ public abstract class AbstractConfig implements Serializable {
         LEGACY_PROPERTIES.put("dubbo.consumer.check", "dubbo.service.allow.no.provider");
         LEGACY_PROPERTIES.put("dubbo.service.url", "dubbo.service.address");
 
-        // this is only for compatibility
+        //优雅停机
         DubboShutdownHook.getDubboShutdownHook().register();
     }
 
-    /**
-     * The config id
-     */
+    //配置对象的ID
     protected String id;
+
+    //配置对象的前缀
     protected String prefix;
 
     private static String convertLegacyValue(String key, String value) {
@@ -136,6 +136,12 @@ public abstract class AbstractConfig implements Serializable {
         return value;
     }
 
+    /**
+     * 获取类名对应的标签
+     *
+     * @param cls
+     * @return
+     */
     private static String getTagName(Class<?> cls) {
         String tag = cls.getSimpleName();
         for (String suffix : SUFFIXES) {
@@ -151,6 +157,13 @@ public abstract class AbstractConfig implements Serializable {
         appendParameters(parameters, config, null);
     }
 
+    /**
+     * 将配置对象的属性集合，添加到参数集合
+     *
+     * @param parameters
+     * @param config
+     * @param prefix
+     */
     @SuppressWarnings("unchecked")
     protected static void appendParameters(Map<String, String> parameters, Object config, String prefix) {
         if (config == null) {
@@ -161,6 +174,7 @@ public abstract class AbstractConfig implements Serializable {
             try {
                 String name = method.getName();
                 if (MethodUtils.isGetter(method)) {
+                    //get方法
                     Parameter parameter = method.getAnnotation(Parameter.class);
                     if (method.getReturnType() == Object.class || parameter != null && parameter.excluded()) {
                         continue;
@@ -171,13 +185,18 @@ public abstract class AbstractConfig implements Serializable {
                     } else {
                         key = calculatePropertyFromGetter(name);
                     }
+                    //获取get方法的值
                     Object value = method.invoke(config);
                     String str = String.valueOf(value).trim();
+
                     if (value != null && str.length() > 0) {
+                        //转义 URLEncoder.encode
                         if (parameter != null && parameter.escaped()) {
                             str = URL.encode(str);
                         }
+                        //用","追加
                         if (parameter != null && parameter.append()) {
+                            //如果存在 则用","分割
                             String pre = parameters.get(DEFAULT_KEY + "." + key);
                             if (pre != null && pre.length() > 0) {
                                 str = pre + "," + str;
@@ -192,14 +211,18 @@ public abstract class AbstractConfig implements Serializable {
                         }
                         parameters.put(key, str);
                     } else if (parameter != null && parameter.required()) {
+                        //非空判断
                         throw new IllegalStateException(config.getClass().getSimpleName() + "." + key + " == null");
                     }
                 } else if ("getParameters".equals(name)
                         && Modifier.isPublic(method.getModifiers())
                         && method.getParameterTypes().length == 0
                         && method.getReturnType() == Map.class) {
+                    //public Map getParameters()方法
+                    //调用重载方法
                     Map<String, String> map = (Map<String, String>) method.invoke(config, new Object[0]);
                     if (map != null && map.size() > 0) {
+                        //遍历map添加前缀
                         String pre = (prefix != null && prefix.length() > 0 ? prefix + "." : "");
                         for (Map.Entry<String, String> entry : map.entrySet()) {
                             parameters.put(pre + entry.getKey().replace('-', '.'), entry.getValue());
@@ -212,10 +235,21 @@ public abstract class AbstractConfig implements Serializable {
         }
     }
 
+    /**
+     * 将@Parameter(attribute=true)的添加到参数集合
+     * @param parameters
+     * @param config
+     */
     protected static void appendAttributes(Map<String, Object> parameters, Object config) {
         appendAttributes(parameters, config, null);
     }
 
+    /**
+     * 将@Parameter(attribute=true)的添加到参数集合
+     * @param parameters
+     * @param config
+     * @param prefix
+     */
     protected static void appendAttributes(Map<String, Object> parameters, Object config, String prefix) {
         if (config == null) {
             return;
@@ -228,6 +262,7 @@ public abstract class AbstractConfig implements Serializable {
                     continue;
                 }
                 String name = method.getName();
+                //get方法
                 if (MethodUtils.isGetter(method)) {
                     String key;
                     if (parameter.key().length() > 0) {
@@ -235,6 +270,7 @@ public abstract class AbstractConfig implements Serializable {
                     } else {
                         key = calculateAttributeFromGetter(name);
                     }
+                    //获取属性值并添加到集合
                     Object value = method.invoke(config);
                     if (value != null) {
                         if (prefix != null && prefix.length() > 0) {

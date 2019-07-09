@@ -87,25 +87,29 @@ import static org.apache.dubbo.common.constants.CommonConstants.USERNAME_KEY;
  * @see java.net.URL
  * @see java.net.URI
  */
-public /*final**/
-class URL implements Serializable {
+public class URL implements Serializable {
 
     private static final long serialVersionUID = -1985165475234910535L;
 
+    //协议名
     private final String protocol;
 
+    //用户名
     private final String username;
 
+    //密码
     private final String password;
 
-    // by default, host to registry
+    //地址
     private final String host;
 
-    // by default, port to registry
+    //端口
     private final int port;
 
+    //路径
     private final String path;
 
+    //参数集合
     private final Map<String, String> parameters;
 
     // ==== cache ====

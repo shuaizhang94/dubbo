@@ -29,31 +29,37 @@ import static org.apache.dubbo.rpc.Constants.PROXY_KEY;
 public interface ProxyFactory {
 
     /**
-     * create proxy.
+     * 创建Proxy 在服务引用时调用
      *
      * @param invoker
-     * @return proxy
+     * @param <T>
+     * @return
+     * @throws RpcException
      */
     @Adaptive({PROXY_KEY})
     <T> T getProxy(Invoker<T> invoker) throws RpcException;
 
     /**
-     * create proxy.
+     * 创建Proxy 在服务引用时调用
      *
      * @param invoker
-     * @return proxy
+     * @param generic
+     * @param <T>
+     * @return
+     * @throws RpcException
      */
     @Adaptive({PROXY_KEY})
     <T> T getProxy(Invoker<T> invoker, boolean generic) throws RpcException;
 
     /**
-     * create invoker.
+     * 创建Invoker 在服务发布时被调用
      *
-     * @param <T>
      * @param proxy
      * @param type
      * @param url
-     * @return invoker
+     * @param <T>
+     * @return
+     * @throws RpcException
      */
     @Adaptive({PROXY_KEY})
     <T> Invoker<T> getInvoker(T proxy, Class<T> type, URL url) throws RpcException;

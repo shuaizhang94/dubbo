@@ -19,25 +19,21 @@ package org.apache.dubbo.rpc;
 import org.apache.dubbo.common.extension.SPI;
 
 /**
- * InvokerListener. (SPI, Singleton, ThreadSafe)
+ * Invoker监听器
  */
 @SPI
 public interface InvokerListener {
 
     /**
-     * The invoker referred
-     *
+     * 当服务引用完成
      * @param invoker
      * @throws RpcException
-     * @see org.apache.dubbo.rpc.Protocol#refer(Class, org.apache.dubbo.common.URL)
      */
     void referred(Invoker<?> invoker) throws RpcException;
 
     /**
-     * The invoker destroyed.
-     *
+     * 当服务销毁完成
      * @param invoker
-     * @see org.apache.dubbo.rpc.Invoker#destroy()
      */
     void destroyed(Invoker<?> invoker);
 

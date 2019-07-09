@@ -40,26 +40,24 @@ import static org.apache.dubbo.remoting.Constants.TELNET;
 import static org.apache.dubbo.remoting.Constants.DUBBO_VERSION_KEY;
 
 /**
- * ProtocolConfig
- *
- * @export
+ * 协议配置 http://dubbo.apache.org/zh-cn/docs/user/references/xml/dubbo-protocol.html
  */
 public class ProtocolConfig extends AbstractConfig {
 
     private static final long serialVersionUID = 6913423882496634749L;
 
     /**
-     * Protocol name
+     * 协议名称
      */
     private String name;
 
     /**
-     * Service ip address (when there are multiple network cards available)
+     * 主机名
      */
     private String host;
 
     /**
-     * Service port
+     * 服务端口
      */
     private Integer port;
 
@@ -69,63 +67,64 @@ public class ProtocolConfig extends AbstractConfig {
     private String contextpath;
 
     /**
-     * Thread pool
+     * 线程池类型
      */
     private String threadpool;
 
     /**
-     * Thread pool core thread size
+     * 核心线程池大小
      */
     private Integer corethreads;
 
     /**
-     * Thread pool size (fixed size)
+     * 服务线程池大小 固定大小
      */
     private Integer threads;
 
     /**
-     * IO thread pool size (fixed size)
+     * IO线程池大小 固定大小
      */
     private Integer iothreads;
 
     /**
-     * Thread pool's queue length
+     * 线程池队列大小
      */
     private Integer queues;
 
     /**
-     * Max acceptable connections
+     * 服务方最大可接受的连接数
      */
     private Integer accepts;
 
     /**
-     * Protocol codec
+     * 协议编码方式
      */
     private String codec;
 
     /**
-     * Serialization
+     * 序列化方式
      */
     private String serialization;
 
     /**
-     * Charset
+     * 序列化编码
      */
     private String charset;
 
     /**
-     * Payload max length
+     * 请求及相应数据包大小限制
      */
     private Integer payload;
 
     /**
-     * Buffer size
+     * 网络缓冲区大小
      */
     private Integer buffer;
 
     /**
-     * Heartbeat interval
+     * 心跳间隔
      */
+
     private Integer heartbeat;
 
     /**
@@ -134,7 +133,7 @@ public class ProtocolConfig extends AbstractConfig {
     private String accesslog;
 
     /**
-     * Transfort
+     * 客户端和服务端的协议类型 可拆分出客户端和服务端server/client
      */
     private String transporter;
 
@@ -144,7 +143,7 @@ public class ProtocolConfig extends AbstractConfig {
     private String exchanger;
 
     /**
-     * Thread dispatch mode
+     * 协议的消息派发方式，用于指定线程模型，比如：dubbo协议的all, direct, message, execution, connection等
      */
     private String dispatcher;
 
@@ -154,17 +153,15 @@ public class ProtocolConfig extends AbstractConfig {
     private String networker;
 
     /**
-     * Sever impl
+     * 协议的服务端协议类型
      */
     private String server;
 
-    /**
-     * Client impl
-     */
+    //协议的客户端协议类型
     private String client;
 
     /**
-     * Supported telnet commands, separated with comma.
+     * 所支持的telnet命令，多个命令用逗号分隔
      */
     private String telnet;
 
@@ -179,7 +176,7 @@ public class ProtocolConfig extends AbstractConfig {
     private String status;
 
     /**
-     * Whether to register
+     * 该协议的服务是否注册到注册中心
      */
     private Boolean register;
 

@@ -34,11 +34,7 @@ import static org.apache.dubbo.config.Constants.STATUS_KEY;
 import static org.apache.dubbo.remoting.Constants.TELNET;
 
 /**
- * The service provider default configuration
- *
- * @export
- * @see org.apache.dubbo.config.ProtocolConfig
- * @see org.apache.dubbo.config.ServiceConfig
+ * 服务提供者配置
  */
 public class ProviderConfig extends AbstractServiceConfig {
 

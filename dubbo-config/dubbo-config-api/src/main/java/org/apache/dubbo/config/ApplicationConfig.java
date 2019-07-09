@@ -46,7 +46,7 @@ import static org.apache.dubbo.config.Constants.TEST_ENVIRONMENT;
 
 
 /**
- * 应用配置信息
+ * 应用配置信息 http://dubbo.apache.org/zh-cn/docs/user/references/xml/dubbo-application.html
  */
 public class ApplicationConfig extends AbstractConfig {
 
@@ -63,33 +63,25 @@ public class ApplicationConfig extends AbstractConfig {
     private String version;
 
     /**
-     * Application owner
+     * 应用负责人
      */
     private String owner;
 
     /**
-     * Application's organization (BU)
+     * 组织名称
      */
     private String organization;
 
-    /**
-     * Architecture layer
-     */
+    //服务层对应的架构
     private String architecture;
 
-    /**
-     * Environment, e.g. dev, test or production
-     */
+    //应用环境
     private String environment;
 
-    /**
-     * Java compiler
-     */
+    //java字节码编译器 jdk或者javassit
     private String compiler;
 
-    /**
-     * The type of the log access
-     */
+    //日志输出方式 slf4j, jcl, log4j, log4j2, jdk
     private String logger;
 
     /**

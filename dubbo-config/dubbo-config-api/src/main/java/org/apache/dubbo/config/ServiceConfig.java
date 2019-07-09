@@ -106,10 +106,10 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
      * The {@link Protocol} implementation with adaptive functionality,it will be different in different scenarios.
      * A particular {@link Protocol} implementation is determined by the protocol attribute in the {@link URL}.
      * For example:
-     *
+     * <p>
      * <li>when the url is registry://224.5.6.7:1234/org.apache.dubbo.registry.RegistryService?application=dubbo-sample,
      * then the protocol is <b>RegistryProtocol</b></li>
-     *
+     * <p>
      * <li>when the url is dubbo://224.5.6.7:1234/org.apache.dubbo.config.api.DemoService?application=dubbo-sample, then
      * the protocol is <b>DubboProtocol</b></li>
      * <p>
@@ -290,40 +290,54 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
     }
 
     public void checkAndUpdateSubConfigs() {
-        // Use default configs defined explicitly on global configs
+        //从ProviderConfig读取application, module, monitor等配置
         completeCompoundConfigs();
         // Config Center should always being started first.
         startConfigCenter();
+
+        //
         checkDefault();
+
+        //校验protocolConfig
         checkProtocol();
+
+        //校验applicationConfig
         checkApplication();
+
         // if protocol is not injvm checkRegistry
         if (!isOnlyInJvm()) {
             checkRegistry();
         }
         this.refresh();
+
         checkMetadataReport();
 
         if (StringUtils.isEmpty(interfaceName)) {
             throw new IllegalStateException("<dubbo:service interface=\"\" /> interface not allow null!");
         }
 
+
         if (ref instanceof GenericService) {
+            //泛化接口
             interfaceClass = GenericService.class;
             if (StringUtils.isEmpty(generic)) {
                 generic = Boolean.TRUE.toString();
             }
         } else {
+            //普通接口
             try {
                 interfaceClass = Class.forName(interfaceName, true, Thread.currentThread()
                         .getContextClassLoader());
             } catch (ClassNotFoundException e) {
                 throw new IllegalStateException(e.getMessage(), e);
             }
+            //校验接口和方法
             checkInterfaceAndMethods(interfaceClass, methods);
+            //校验指向的service对象
             checkRef();
             generic = Boolean.FALSE.toString();
         }
+        //处理服务客户端本地代理
         if (local != null) {
             if ("true".equals(local)) {
                 local = interfaceName + "Local";
@@ -366,6 +380,8 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
     }
 
     public synchronized void export() {
+
+        //校验服务配置
         checkAndUpdateSubConfigs();
 
         if (!shouldExport()) {
@@ -402,6 +418,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
     }
 
     protected synchronized void doExport() {
+        //检查是否可以暴露，若可以，则标记为已暴露
         if (unexported) {
             throw new IllegalStateException("The service " + interfaceClass.getName() + " has already unexported!");
         }
@@ -413,11 +430,15 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
         if (StringUtils.isEmpty(path)) {
             path = interfaceName;
         }
+        //暴露服务
         doExportUrls();
     }
 
+    /**
+     * 校验实例
+     */
     private void checkRef() {
-        // reference should not be null, and is the implementation of the given interface
+        // 校验ref是不是接口的实现类
         if (ref == null) {
             throw new IllegalStateException("ref not allow null!");
         }
@@ -471,10 +492,10 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
             name = DUBBO;
         }
 
+        //将属性放到map中
         Map<String, String> map = new HashMap<String, String>();
         map.put(SIDE_KEY, PROVIDER_SIDE);
 
-        //
         appendRuntimeParameters(map);
         appendParameters(map, metrics);
         appendParameters(map, application);
@@ -486,6 +507,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
         appendParameters(map, this);
 
 
+        //追加针对于方法的属性配置
         if (CollectionUtils.isNotEmpty(methods)) {
             for (MethodConfig method : methods) {
                 appendParameters(map, method, method.getName());
@@ -542,15 +564,19 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
             } // end of methods for
         }
 
+        //泛化接口
         if (ProtocolUtils.isGeneric(generic)) {
+            //设置泛化接口属性
             map.put(GENERIC_KEY, generic);
             map.put(METHODS_KEY, ANY_VALUE);
         } else {
+            //设置版本号
             String revision = Version.getVersion(interfaceClass, version);
             if (revision != null && revision.length() > 0) {
                 map.put(REVISION_KEY, revision);
             }
 
+            //获取
             String[] methods = Wrapper.getWrapper(interfaceClass).getMethodNames();
             if (methods.length == 0) {
                 logger.warn("No method found in service interface " + interfaceClass.getName());
