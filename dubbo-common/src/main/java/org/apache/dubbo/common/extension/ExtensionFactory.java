@@ -17,17 +17,18 @@
 package org.apache.dubbo.common.extension;
 
 /**
- * ExtensionFactory
+ * 扩展类工厂
  */
 @SPI
 public interface ExtensionFactory {
 
     /**
-     * Get extension.
+     * 获取扩展实例
      *
-     * @param type object type.
-     * @param name object name.
-     * @return object instance.
+     * @param type
+     * @param name
+     * @param <T>
+     * @return
      */
     <T> T getExtension(Class<T> type, String name);
 

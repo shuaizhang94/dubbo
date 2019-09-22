@@ -21,7 +21,7 @@ import org.apache.dubbo.common.extension.ExtensionLoader;
 import org.apache.dubbo.common.extension.SPI;
 
 /**
- * SpiExtensionFactory
+ * SPI扩展工厂
  */
 public class SpiExtensionFactory implements ExtensionFactory {
 

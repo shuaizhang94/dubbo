@@ -50,7 +50,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * JdkCompiler. (SPI, Singleton, ThreadSafe)
+ * JDK编译器
  */
 public class JdkCompiler extends AbstractCompiler {
 

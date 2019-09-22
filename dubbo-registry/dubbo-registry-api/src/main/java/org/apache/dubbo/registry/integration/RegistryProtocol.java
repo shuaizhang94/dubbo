@@ -120,16 +120,29 @@ public class RegistryProtocol implements Protocol {
     };
 
     private final static Logger logger = LoggerFactory.getLogger(RegistryProtocol.class);
+
+    //单例
     private static RegistryProtocol INSTANCE;
+
     private final Map<URL, NotifyListener> overrideListeners = new ConcurrentHashMap<>();
+
     private final Map<String, ServiceConfigurationListener> serviceConfigurationListeners = new ConcurrentHashMap<>();
+
     private final ProviderConfigurationListener providerConfigurationListener = new ProviderConfigurationListener();
     //To solve the problem of RMI repeated exposure port conflicts, the services that have been exposed are no longer exposed.
     //providerurl <--> exporter
     private final ConcurrentMap<String, ExporterChangeableWrapper<?>> bounds = new ConcurrentHashMap<>();
+
+    //自适应扩展 通过Dubbo SPI注入
     private Cluster cluster;
+
+    //自适应扩展 通过Dubbo SPI注入
     private Protocol protocol;
+
+    //自适应扩展 通过Dubbo SPI注入
     private RegistryFactory registryFactory;
+
+    //自适应扩展 通过Dubbo SPI注入
     private ProxyFactory proxyFactory;
 
     public RegistryProtocol() {
@@ -192,9 +205,10 @@ public class RegistryProtocol implements Protocol {
 
     @Override
     public <T> Exporter<T> export(final Invoker<T> originInvoker) throws RpcException {
-        //获取注册中心URL
+        //获取注册URL
         URL registryUrl = getRegistryUrl(originInvoker);
-        //
+
+        //服务提供者URL
         URL providerUrl = getProviderUrl(originInvoker);
 
         // Subscribe the override data
@@ -229,6 +243,9 @@ public class RegistryProtocol implements Protocol {
             providerInvokerWrapper.setReg(true);
         }
 
+
+
+        
         //订阅
         registry.subscribe(overrideSubscribeUrl, overrideSubscribeListener);
 

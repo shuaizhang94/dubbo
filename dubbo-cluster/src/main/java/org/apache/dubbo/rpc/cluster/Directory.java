@@ -24,11 +24,9 @@ import org.apache.dubbo.rpc.RpcException;
 import java.util.List;
 
 /**
- * Directory. (SPI, Prototype, ThreadSafe)
- * <p>
- * <a href="http://en.wikipedia.org/wiki/Directory_service">Directory Service</a>
+ * 目录集合
  *
- * @see org.apache.dubbo.rpc.cluster.Cluster#join(Directory)
+ * @param <T>
  */
 public interface Directory<T> extends Node {
 
@@ -40,9 +38,11 @@ public interface Directory<T> extends Node {
     Class<T> getInterface();
 
     /**
-     * list invokers.
+     * 获取Invoker列表
      *
-     * @return invokers
+     * @param invocation
+     * @return
+     * @throws RpcException
      */
     List<Invoker<T>> list(Invocation invocation) throws RpcException;
 

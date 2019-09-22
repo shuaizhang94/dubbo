@@ -21,7 +21,7 @@ import org.apache.dubbo.common.extension.Adaptive;
 import org.apache.dubbo.common.extension.ExtensionLoader;
 
 /**
- * AdaptiveCompiler. (SPI, Singleton, ThreadSafe)
+ * 自适应扩展编译器，用于管理其它编译器
  */
 @Adaptive
 public class AdaptiveCompiler implements Compiler {
@@ -40,6 +40,7 @@ public class AdaptiveCompiler implements Compiler {
         if (name != null && name.length() > 0) {
             compiler = loader.getExtension(name);
         } else {
+            //默认使用javassit
             compiler = loader.getDefaultExtension();
         }
         return compiler.compile(code, classLoader);

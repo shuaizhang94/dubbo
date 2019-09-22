@@ -25,7 +25,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * AdaptiveExtensionFactory
+ * 自适应扩展工厂
  */
 @Adaptive
 public class AdaptiveExtensionFactory implements ExtensionFactory {

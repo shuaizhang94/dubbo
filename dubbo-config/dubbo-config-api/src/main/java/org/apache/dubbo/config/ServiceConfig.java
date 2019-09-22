@@ -155,7 +155,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
     private Class<?> interfaceClass;
 
     /**
-     * The reference of the interface implementation
+     * 服务提供者接口实现
      */
     private T ref;
 
@@ -292,7 +292,8 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
     public void checkAndUpdateSubConfigs() {
         //从ProviderConfig读取application, module, monitor等配置
         completeCompoundConfigs();
-        // Config Center should always being started first.
+
+        //启动配置中心
         startConfigCenter();
 
         //
@@ -473,7 +474,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
     private void doExportUrls() {
         //加载注册中心配置
         List<URL> registryURLs = loadRegistries(true);
-        //遍历所有protocols 向所有注册中心注册服务
+        //遍历所有协议
         for (ProtocolConfig protocolConfig : protocols) {
             //构建url
             String pathKey = URL.buildKey(getContextPath(protocolConfig).map(p -> p + "/" + path).orElse(path), group, version);
@@ -492,7 +493,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
             name = DUBBO;
         }
 
-        //将属性放到map中
+        //将属性放到map中 用于构建url
         Map<String, String> map = new HashMap<String, String>();
         map.put(SIDE_KEY, PROVIDER_SIDE);
 

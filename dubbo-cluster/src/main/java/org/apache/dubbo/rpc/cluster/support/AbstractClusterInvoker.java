@@ -47,17 +47,29 @@ import static org.apache.dubbo.rpc.cluster.Constants.DEFAULT_LOADBALANCE;
 import static org.apache.dubbo.rpc.cluster.Constants.LOADBALANCE_KEY;
 
 /**
- * AbstractClusterInvoker
+ * 集群Invoker基类
+ *
+ * @param <T>
  */
 public abstract class AbstractClusterInvoker<T> implements Invoker<T> {
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractClusterInvoker.class);
 
+    /**
+     * directory对象
+     */
     protected final Directory<T> directory;
 
+    /**
+     * 集群时是否排除非可用的invoker 默认为true
+     */
     protected final boolean availablecheck;
 
+    /**
+     * 是否已经销毁
+     */
     private AtomicBoolean destroyed = new AtomicBoolean(false);
+
 
     private volatile Invoker<T> stickyInvoker = null;
 
@@ -276,6 +288,13 @@ public abstract class AbstractClusterInvoker<T> implements Invoker<T> {
     protected abstract Result doInvoke(Invocation invocation, List<Invoker<T>> invokers,
                                        LoadBalance loadbalance) throws RpcException;
 
+    /**
+     * 获取所有调用者集合
+     *
+     * @param invocation
+     * @return
+     * @throws RpcException
+     */
     protected List<Invoker<T>> list(Invocation invocation) throws RpcException {
         return directory.list(invocation);
     }

@@ -215,37 +215,34 @@ public class ExtensionLoader<T> {
     }
 
     /**
-     * This is equivalent to {@code getActivateExtension(url, key, null)}
+     * 获取激活扩展对象
      *
-     * @param url url
-     * @param key url parameter key which used to get extension point names
-     * @return extension list which are activated.
-     * @see #getActivateExtension(org.apache.dubbo.common.URL, String, String)
+     * @param url
+     * @param key
+     * @return
      */
     public List<T> getActivateExtension(URL url, String key) {
         return getActivateExtension(url, key, null);
     }
 
     /**
-     * This is equivalent to {@code getActivateExtension(url, values, null)}
+     * 获取激活扩展对象
      *
-     * @param url    url
-     * @param values extension point names
-     * @return extension list which are activated
-     * @see #getActivateExtension(org.apache.dubbo.common.URL, String[], String)
+     * @param url
+     * @param values
+     * @return
      */
     public List<T> getActivateExtension(URL url, String[] values) {
         return getActivateExtension(url, values, null);
     }
 
     /**
-     * This is equivalent to {@code getActivateExtension(url, url.getParameter(key).split(","), null)}
+     * 获取激活扩展对象
      *
-     * @param url   url
-     * @param key   url parameter key which used to get extension point names
-     * @param group group
-     * @return extension list which are activated.
-     * @see #getActivateExtension(org.apache.dubbo.common.URL, String[], String)
+     * @param url
+     * @param key
+     * @param group
+     * @return
      */
     public List<T> getActivateExtension(URL url, String key, String group) {
         String value = url.getParameter(key);
@@ -253,13 +250,12 @@ public class ExtensionLoader<T> {
     }
 
     /**
-     * Get activate extensions.
+     * 获取激活扩展对象
      *
-     * @param url    url
-     * @param values extension point names
-     * @param group  group
-     * @return extension list which are activated
-     * @see org.apache.dubbo.common.extension.Activate
+     * @param url
+     * @param values
+     * @param group
+     * @return
      */
     public List<T> getActivateExtension(URL url, String[] values, String group) {
         List<T> exts = new ArrayList<>();
@@ -531,6 +527,11 @@ public class ExtensionLoader<T> {
         }
     }
 
+    /**
+     * 获取自适应扩展对象
+     *
+     * @return
+     */
     @SuppressWarnings("unchecked")
     public T getAdaptiveExtension() {
         Object instance = cachedAdaptiveInstance.get();
@@ -612,6 +613,12 @@ public class ExtensionLoader<T> {
         }
     }
 
+    /**
+     * 依赖注入
+     *
+     * @param instance
+     * @return
+     */
     private T injectExtension(T instance) {
         try {
             if (objectFactory != null) {
@@ -630,7 +637,7 @@ public class ExtensionLoader<T> {
                         try {
                             //获得属性名
                             String property = getSetterProperty(method);
-                            //获得属性值
+                            //获得实例
                             Object object = objectFactory.getExtension(pt, property);
                             if (object != null) {
                                 //设置属性值
@@ -940,6 +947,11 @@ public class ExtensionLoader<T> {
         }
     }
 
+    /**
+     * 获取自适应扩展的类
+     *
+     * @return
+     */
     private Class<?> getAdaptiveExtensionClass() {
         getExtensionClasses();
         if (cachedAdaptiveClass != null) {
@@ -948,6 +960,11 @@ public class ExtensionLoader<T> {
         return cachedAdaptiveClass = createAdaptiveExtensionClass();
     }
 
+    /**
+     * 创建自适应扩展的类
+     *
+     * @return
+     */
     private Class<?> createAdaptiveExtensionClass() {
         //动态生成代码，并进行编译
         String code = new AdaptiveClassCodeGenerator(type, cachedDefaultName).generate();

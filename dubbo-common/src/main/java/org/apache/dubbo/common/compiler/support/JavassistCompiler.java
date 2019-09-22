@@ -24,7 +24,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * JavassistCompiler. (SPI, Singleton, ThreadSafe)
+ * Javassit编译器
  */
 public class JavassistCompiler extends AbstractCompiler {
 
