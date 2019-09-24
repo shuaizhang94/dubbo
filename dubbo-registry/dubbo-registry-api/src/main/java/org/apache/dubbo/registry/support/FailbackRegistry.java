@@ -369,6 +369,11 @@ public abstract class FailbackRegistry extends AbstractRegistry {
         super.notify(url, listener, urls);
     }
 
+    /**
+     * 重连
+     *
+     * @throws Exception
+     */
     @Override
     protected void recover() throws Exception {
         // register

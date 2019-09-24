@@ -54,22 +54,26 @@ import static org.apache.dubbo.common.constants.RegistryConstants.ROUTERS_CATEGO
 
 /**
  * ZookeeperRegistry
- *
  */
 public class ZookeeperRegistry extends FailbackRegistry {
 
     private final static Logger logger = LoggerFactory.getLogger(ZookeeperRegistry.class);
 
+    //dubbo默认端口
     private final static int DEFAULT_ZOOKEEPER_PORT = 2181;
 
     private final static String DEFAULT_ROOT = "dubbo";
 
+    //ZK根节点
     private final String root;
 
+    //接口名称集合
     private final Set<String> anyServices = new ConcurrentHashSet<>();
 
+    //URL监听集合
     private final ConcurrentMap<URL, ConcurrentMap<NotifyListener, ChildListener>> zkListeners = new ConcurrentHashMap<>();
 
+    //ZK客户端
     private final ZookeeperClient zkClient;
 
     public ZookeeperRegistry(URL url, ZookeeperTransporter zookeeperTransporter) {
@@ -77,15 +81,18 @@ public class ZookeeperRegistry extends FailbackRegistry {
         if (url.isAnyHost()) {
             throw new IllegalStateException("registry address == null");
         }
+        //默认dubbo为根节点 如果有group，则使用group作为根节点
         String group = url.getParameter(GROUP_KEY, DEFAULT_ROOT);
         if (!group.startsWith(PATH_SEPARATOR)) {
             group = PATH_SEPARATOR + group;
         }
         this.root = group;
+        //创建客户端 并进行监听
         zkClient = zookeeperTransporter.connect(url);
         zkClient.addStateListener(state -> {
             if (state == StateListener.RECONNECTED) {
                 try {
+                    //掉线重连
                     recover();
                 } catch (Exception e) {
                     logger.error(e.getMessage(), e);
