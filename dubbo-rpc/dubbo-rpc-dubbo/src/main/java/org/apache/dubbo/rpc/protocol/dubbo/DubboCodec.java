@@ -45,20 +45,31 @@ import static org.apache.dubbo.rpc.protocol.dubbo.Constants.DECODE_IN_IO_THREAD_
 import static org.apache.dubbo.rpc.protocol.dubbo.Constants.DEFAULT_DECODE_IN_IO_THREAD;
 
 /**
- * Dubbo codec.
+ * Dubbo编解码器
  */
 public class DubboCodec extends ExchangeCodec {
 
+    //协议名
     public static final String NAME = "dubbo";
+    //版本号
     public static final String DUBBO_VERSION = Version.getProtocolVersion();
+    //响应-异常
     public static final byte RESPONSE_WITH_EXCEPTION = 0;
+    //响应-有返回值
     public static final byte RESPONSE_VALUE = 1;
+    //响应-空返回值
     public static final byte RESPONSE_NULL_VALUE = 2;
+    //响应-异常-带参数
     public static final byte RESPONSE_WITH_EXCEPTION_WITH_ATTACHMENTS = 3;
+    //响应-有返回值-带参数
     public static final byte RESPONSE_VALUE_WITH_ATTACHMENTS = 4;
+    //响应-空返回值-带参数
     public static final byte RESPONSE_NULL_VALUE_WITH_ATTACHMENTS = 5;
+    //方法参数-空
     public static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
+    //类参数-空
     public static final Class<?>[] EMPTY_CLASS_ARRAY = new Class<?>[0];
+
     private static final Logger log = LoggerFactory.getLogger(DubboCodec.class);
 
     @Override

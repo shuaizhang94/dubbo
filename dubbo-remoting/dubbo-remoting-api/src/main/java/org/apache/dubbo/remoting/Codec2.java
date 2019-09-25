@@ -22,6 +22,9 @@ import org.apache.dubbo.remoting.buffer.ChannelBuffer;
 
 import java.io.IOException;
 
+/**
+ * 编解码器
+ */
 @SPI
 public interface Codec2 {
 

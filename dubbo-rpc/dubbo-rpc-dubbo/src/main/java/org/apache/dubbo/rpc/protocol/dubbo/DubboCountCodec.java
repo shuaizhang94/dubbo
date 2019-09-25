@@ -33,6 +33,7 @@ import static org.apache.dubbo.rpc.Constants.OUTPUT_KEY;
 
 public final class DubboCountCodec implements Codec2 {
 
+    //编解码器
     private DubboCodec codec = new DubboCodec();
 
     @Override
@@ -42,22 +43,31 @@ public final class DubboCountCodec implements Codec2 {
 
     @Override
     public Object decode(Channel channel, ChannelBuffer buffer) throws IOException {
+        //记录当前读位置
         int save = buffer.readerIndex();
+        //创建multiMessage
         MultiMessage result = MultiMessage.create();
         do {
+            //解码
             Object obj = codec.decode(channel, buffer);
+            //输入不够，重置读进度
             if (Codec2.DecodeResult.NEED_MORE_INPUT == obj) {
                 buffer.readerIndex(save);
                 break;
             } else {
+                //添加结果消息
                 result.addMessage(obj);
+                //记录消息长度
                 logMessageLength(obj, buffer.readerIndex() - save);
+                //记录当前位置
                 save = buffer.readerIndex();
             }
         } while (true);
+        //需要更多的输入
         if (result.isEmpty()) {
             return Codec2.DecodeResult.NEED_MORE_INPUT;
         }
+        //返回解析到的消息
         if (result.size() == 1) {
             return result.get(0);
         }
