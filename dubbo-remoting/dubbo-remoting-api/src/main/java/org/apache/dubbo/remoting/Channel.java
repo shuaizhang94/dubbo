@@ -19,7 +19,7 @@ package org.apache.dubbo.remoting;
 import java.net.InetSocketAddress;
 
 /**
- * Channel. (API/SPI, Prototype, ThreadSafe)
+ * 通道
  *
  * @see org.apache.dubbo.remoting.Client
  * @see org.apache.dubbo.remoting.Server#getChannels()

@@ -19,17 +19,23 @@ package org.apache.dubbo.remoting;
 import java.net.InetSocketAddress;
 
 /**
- * TimeoutException. (API, Prototype, ThreadSafe)
+ * 超时异常
  *
  * @export
  * @see org.apache.dubbo.remoting.exchange.support.DefaultFuture#get()
  */
 public class TimeoutException extends RemotingException {
 
+    //客户端
     public static final int CLIENT_SIDE = 0;
+
+    //服务端
     public static final int SERVER_SIDE = 1;
-    private static final long serialVersionUID = 3122966731958222692L;
+
+    //具体是客户端还是服务端
     private final int phase;
+
+    private static final long serialVersionUID = 3122966731958222692L;
 
     public TimeoutException(boolean serverSide, Channel channel, String message) {
         super(channel, message);

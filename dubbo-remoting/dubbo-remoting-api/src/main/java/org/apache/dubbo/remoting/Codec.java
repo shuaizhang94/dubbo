@@ -24,7 +24,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
- * Codec. (SPI, Singleton, ThreadSafe)
+ * 编解码器 已启用 通过CodecAdapter适配
+ * @see Codec2
  */
 @Deprecated
 @SPI

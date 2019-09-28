@@ -27,7 +27,7 @@ import java.util.Collection;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
- * ChannelListenerDispatcher
+ * 事情处理分发器
  */
 public class ChannelHandlerDispatcher implements ChannelHandler {
 

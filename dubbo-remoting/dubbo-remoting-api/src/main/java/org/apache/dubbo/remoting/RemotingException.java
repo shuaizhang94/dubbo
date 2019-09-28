@@ -19,7 +19,7 @@ package org.apache.dubbo.remoting;
 import java.net.InetSocketAddress;
 
 /**
- * RemotingException. (API, Prototype, ThreadSafe)
+ * 传输层基础异常
  *
  * @export
  * @see org.apache.dubbo.remoting.exchange.support.DefaultFuture#get()

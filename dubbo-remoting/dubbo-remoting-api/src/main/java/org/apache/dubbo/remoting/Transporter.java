@@ -21,7 +21,7 @@ import org.apache.dubbo.common.extension.Adaptive;
 import org.apache.dubbo.common.extension.SPI;
 
 /**
- * Transporter. (SPI, Singleton, ThreadSafe)
+ * 网络传输接口
  * <p>
  * <a href="http://en.wikipedia.org/wiki/Transport_Layer">Transport Layer</a>
  * <a href="http://en.wikipedia.org/wiki/Client%E2%80%93server_model">Client/Server</a>
@@ -32,25 +32,23 @@ import org.apache.dubbo.common.extension.SPI;
 public interface Transporter {
 
     /**
-     * Bind a server.
+     * 绑定一个服务端
      *
-     * @param url     server url
+     * @param url
      * @param handler
-     * @return server
+     * @return
      * @throws RemotingException
-     * @see org.apache.dubbo.remoting.Transporters#bind(URL, ChannelHandler...)
      */
     @Adaptive({Constants.SERVER_KEY, Constants.TRANSPORTER_KEY})
     Server bind(URL url, ChannelHandler handler) throws RemotingException;
 
     /**
-     * Connect to a server.
+     * 连接服务端
      *
-     * @param url     server url
+     * @param url
      * @param handler
-     * @return client
+     * @return
      * @throws RemotingException
-     * @see org.apache.dubbo.remoting.Transporters#connect(URL, ChannelHandler...)
      */
     @Adaptive({Constants.CLIENT_KEY, Constants.TRANSPORTER_KEY})
     Client connect(URL url, ChannelHandler handler) throws RemotingException;

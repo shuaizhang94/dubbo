@@ -23,7 +23,7 @@ import org.apache.dubbo.remoting.transport.ChannelHandlerAdapter;
 import org.apache.dubbo.remoting.transport.ChannelHandlerDispatcher;
 
 /**
- * Transporter facade. (API, Static, ThreadSafe)
+ * Transporter 外观 外观模式
  */
 public class Transporters {
 
@@ -36,10 +36,26 @@ public class Transporters {
     private Transporters() {
     }
 
+    /**
+     * 绑定一个服务端
+     *
+     * @param url
+     * @param handler
+     * @return
+     * @throws RemotingException
+     */
     public static Server bind(String url, ChannelHandler... handler) throws RemotingException {
         return bind(URL.valueOf(url), handler);
     }
 
+    /**
+     * 绑定一个服务端
+     *
+     * @param url
+     * @param handlers
+     * @return
+     * @throws RemotingException
+     */
     public static Server bind(URL url, ChannelHandler... handlers) throws RemotingException {
         if (url == null) {
             throw new IllegalArgumentException("url == null");
@@ -53,17 +69,35 @@ public class Transporters {
         } else {
             handler = new ChannelHandlerDispatcher(handlers);
         }
+        //创建Server对象
         return getTransporter().bind(url, handler);
     }
 
+    /**
+     * 连接服务端
+     *
+     * @param url
+     * @param handler
+     * @return
+     * @throws RemotingException
+     */
     public static Client connect(String url, ChannelHandler... handler) throws RemotingException {
         return connect(URL.valueOf(url), handler);
     }
 
+    /**
+     * 连接服务端
+     *
+     * @param url
+     * @param handlers
+     * @return
+     * @throws RemotingException
+     */
     public static Client connect(URL url, ChannelHandler... handlers) throws RemotingException {
         if (url == null) {
             throw new IllegalArgumentException("url == null");
         }
+        //创建handler
         ChannelHandler handler;
         if (handlers == null || handlers.length == 0) {
             handler = new ChannelHandlerAdapter();
@@ -75,6 +109,11 @@ public class Transporters {
         return getTransporter().connect(url, handler);
     }
 
+    /**
+     * 获取Transporter
+     *
+     * @return
+     */
     public static Transporter getTransporter() {
         return ExtensionLoader.getExtensionLoader(Transporter.class).getAdaptiveExtension();
     }

@@ -22,7 +22,7 @@ import java.net.InetSocketAddress;
 import java.util.Collection;
 
 /**
- * Remoting Server. (API/SPI, Prototype, ThreadSafe)
+ * 服务端
  * <p>
  * <a href="http://en.wikipedia.org/wiki/Client%E2%80%93server_model">Client/Server</a>
  *
@@ -31,7 +31,7 @@ import java.util.Collection;
 public interface Server extends Endpoint, Resetable, IdleSensible {
 
     /**
-     * is bound.
+     * 是否启动成功
      *
      * @return bound
      */
