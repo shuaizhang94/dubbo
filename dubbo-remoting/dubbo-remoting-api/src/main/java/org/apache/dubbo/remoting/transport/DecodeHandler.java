@@ -26,6 +26,9 @@ import org.apache.dubbo.remoting.RemotingException;
 import org.apache.dubbo.remoting.exchange.Request;
 import org.apache.dubbo.remoting.exchange.Response;
 
+/**
+ * 解码处理器
+ */
 public class DecodeHandler extends AbstractChannelHandlerDelegate {
 
     private static final Logger log = LoggerFactory.getLogger(DecodeHandler.class);
@@ -54,6 +57,7 @@ public class DecodeHandler extends AbstractChannelHandlerDelegate {
     private void decode(Object message) {
         if (message instanceof Decodeable) {
             try {
+                //解析消息
                 ((Decodeable) message).decode();
                 if (log.isDebugEnabled()) {
                     log.debug("Decode decodeable message " + message.getClass().getName());

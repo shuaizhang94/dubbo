@@ -43,7 +43,7 @@ import static org.apache.dubbo.remoting.Constants.ACCEPTS_KEY;
 import static org.apache.dubbo.remoting.Constants.DEFAULT_ACCEPTS;
 
 /**
- * AbstractServer
+ * 服务端抽象类
  */
 public abstract class AbstractServer extends AbstractEndpoint implements Server {
 
@@ -57,17 +57,20 @@ public abstract class AbstractServer extends AbstractEndpoint implements Server 
 
     public AbstractServer(URL url, ChannelHandler handler) throws RemotingException {
         super(url, handler);
+        //服务地址
         localAddress = getUrl().toInetSocketAddress();
-
+        //绑定IP
         String bindIp = getUrl().getParameter(Constants.BIND_IP_KEY, getUrl().getHost());
         int bindPort = getUrl().getParameter(Constants.BIND_PORT_KEY, getUrl().getPort());
         if (url.getParameter(ANYHOST_KEY, false) || NetUtils.isInvalidLocalHost(bindIp)) {
             bindIp = ANYHOST_VALUE;
         }
+        //绑定地址
         bindAddress = new InetSocketAddress(bindIp, bindPort);
         this.accepts = url.getParameter(ACCEPTS_KEY, DEFAULT_ACCEPTS);
         this.idleTimeout = url.getParameter(IDLE_TIMEOUT_KEY, DEFAULT_IDLE_TIMEOUT);
         try {
+            //开启服务器
             doOpen();
             if (logger.isInfoEnabled()) {
                 logger.info("Start " + getClass().getSimpleName() + " bind " + getBindAddress() + ", export " + getLocalAddress());
@@ -137,8 +140,16 @@ public abstract class AbstractServer extends AbstractEndpoint implements Server 
         super.setUrl(getUrl().addParameters(url.getParameters()));
     }
 
+    /**
+     * 发送消息
+     *
+     * @param message
+     * @param sent    是否已经发送到Socket
+     * @throws RemotingException
+     */
     @Override
     public void send(Object message, boolean sent) throws RemotingException {
+        //获得所有客户端的连接 群发消息
         Collection<Channel> channels = getChannels();
         for (Channel channel : channels) {
             if (channel.isConnected()) {
@@ -190,19 +201,21 @@ public abstract class AbstractServer extends AbstractEndpoint implements Server 
 
     @Override
     public void connected(Channel ch) throws RemotingException {
-        // If the server has entered the shutdown process, reject any new connection
+        //如果正在关闭或者已经关闭，则拒绝所有连接
         if (this.isClosing() || this.isClosed()) {
             logger.warn("Close new channel " + ch + ", cause: server is closing or has been closed. For example, receive a new connect request while in shutdown process.");
             ch.close();
             return;
         }
 
+        //超过上限 关闭新的连接
         Collection<Channel> channels = getChannels();
         if (accepts > 0 && channels.size() > accepts) {
             logger.error("Close channel " + ch + ", cause: The server " + ch.getLocalAddress() + " connections greater than max config " + accepts);
             ch.close();
             return;
         }
+        //连接
         super.connected(ch);
     }
 

@@ -24,7 +24,7 @@ import org.apache.dubbo.remoting.RemotingException;
 import java.net.InetSocketAddress;
 
 /**
- * ClientDelegate
+ * 客户端装饰者
  */
 public class ClientDelegate implements Client {
 

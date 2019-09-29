@@ -31,7 +31,7 @@ import org.apache.dubbo.remoting.Constants;
 import static org.apache.dubbo.common.constants.CommonConstants.SIDE_KEY;
 
 /**
- * AbstractCodec
+ * 编解码抽象类
  */
 public abstract class AbstractCodec implements Codec2 {
 
@@ -41,25 +41,45 @@ public abstract class AbstractCodec implements Codec2 {
 
     private static final String SERVER_SIDE = "server";
 
+    /**
+     * 校验消息长度
+     *
+     * @param channel
+     * @param size
+     * @throws IOException
+     */
     protected static void checkPayload(Channel channel, long size) throws IOException {
+        //消息长度
         int payload = Constants.DEFAULT_PAYLOAD;
         if (channel != null && channel.getUrl() != null) {
             payload = channel.getUrl().getParameter(Constants.PAYLOAD_KEY, Constants.DEFAULT_PAYLOAD);
         }
         if (payload > 0 && size > payload) {
             ExceedPayloadLimitException e = new ExceedPayloadLimitException(
-                "Data length too large: " + size + ", max payload: " + payload + ", channel: " + channel);
+                    "Data length too large: " + size + ", max payload: " + payload + ", channel: " + channel);
             logger.error(e);
             throw e;
         }
     }
 
+    /**
+     * 获得序列化对象
+     *
+     * @param channel
+     * @return
+     */
     protected Serialization getSerialization(Channel channel) {
         return CodecSupport.getSerialization(channel.getUrl());
     }
 
+    /**
+     * 是否客户端的通道
+     *
+     * @param channel
+     * @return
+     */
     protected boolean isClientSide(Channel channel) {
-        String side = (String)channel.getAttribute(SIDE_KEY);
+        String side = (String) channel.getAttribute(SIDE_KEY);
         if (CLIENT_SIDE.equals(side)) {
             return true;
         } else if (SERVER_SIDE.equals(side)) {
@@ -68,15 +88,20 @@ public abstract class AbstractCodec implements Codec2 {
             InetSocketAddress address = channel.getRemoteAddress();
             URL url = channel.getUrl();
             boolean isClient = url.getPort() == address.getPort()
-                && NetUtils.filterLocalHost(url.getIp()).equals(
-                NetUtils.filterLocalHost(address.getAddress()
-                    .getHostAddress()));
+                    && NetUtils.filterLocalHost(url.getIp()).equals(
+                    NetUtils.filterLocalHost(address.getAddress()
+                            .getHostAddress()));
             channel.setAttribute(SIDE_KEY, isClient ? CLIENT_SIDE
-                : SERVER_SIDE);
+                    : SERVER_SIDE);
             return isClient;
         }
     }
 
+    /**
+     * 是否服务端的通道
+     * @param channel
+     * @return
+     */
     protected boolean isServerSide(Channel channel) {
         return !isClientSide(channel);
     }

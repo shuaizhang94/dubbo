@@ -35,13 +35,20 @@ import static org.apache.dubbo.common.serialize.Constants.COMPACTED_JAVA_SERIALI
 import static org.apache.dubbo.common.serialize.Constants.JAVA_SERIALIZATION_ID;
 import static org.apache.dubbo.common.serialize.Constants.NATIVE_JAVA_SERIALIZATION_ID;
 
+/**
+ * 编解码工具类
+ */
 public class CodecSupport {
 
     private static final Logger logger = LoggerFactory.getLogger(CodecSupport.class);
+
+    //序列化对象集合 key:序列化类型编号 value:序列化对象
     private static Map<Byte, Serialization> ID_SERIALIZATION_MAP = new HashMap<Byte, Serialization>();
+    //序列化名称集合 key:序列化类型编号 value:序列化扩展名
     private static Map<Byte, String> ID_SERIALIZATIONNAME_MAP = new HashMap<Byte, String>();
 
     static {
+        //将所有的序列化组件 放到map中
         Set<String> supportedExtensions = ExtensionLoader.getExtensionLoader(Serialization.class).getSupportedExtensions();
         for (String name : supportedExtensions) {
             Serialization serialization = ExtensionLoader.getExtensionLoader(Serialization.class).getExtension(name);
@@ -66,6 +73,7 @@ public class CodecSupport {
     }
 
     public static Serialization getSerialization(URL url) {
+        //默认hessian2
         return ExtensionLoader.getExtensionLoader(Serialization.class).getExtension(
                 url.getParameter(Constants.SERIALIZATION_KEY, Constants.DEFAULT_REMOTING_SERIALIZATION));
     }

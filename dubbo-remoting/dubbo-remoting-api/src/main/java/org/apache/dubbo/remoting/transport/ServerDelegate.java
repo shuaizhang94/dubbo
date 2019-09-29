@@ -26,9 +26,7 @@ import java.net.InetSocketAddress;
 import java.util.Collection;
 
 /**
- * ServerDelegate
- *
- *
+ * 服务端 装饰者类
  */
 public class ServerDelegate implements Server {
 
