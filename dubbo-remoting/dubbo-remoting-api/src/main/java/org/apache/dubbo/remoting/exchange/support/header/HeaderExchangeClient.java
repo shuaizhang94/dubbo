@@ -40,16 +40,27 @@ import static org.apache.dubbo.remoting.Constants.LEAST_HEARTBEAT_DURATION;
 import static org.apache.dubbo.remoting.Constants.TICKS_PER_WHEEL;
 
 /**
- * DefaultMessageClient
+ * 信息交换客户端接口实现
  */
 public class HeaderExchangeClient implements ExchangeClient {
 
     private final Client client;
     private final ExchangeChannel channel;
 
+    /**
+     * 空闲检测Timer
+     */
     private static final HashedWheelTimer IDLE_CHECK_TIMER = new HashedWheelTimer(
             new NamedThreadFactory("dubbo-client-idleCheck", true), 1, TimeUnit.SECONDS, TICKS_PER_WHEEL);
+
+    /**
+     * 心跳任务
+     */
     private HeartbeatTimerTask heartBeatTimerTask;
+
+    /**
+     * 重连任务
+     */
     private ReconnectTimerTask reconnectTimerTask;
 
     public HeaderExchangeClient(Client client, boolean startTimer) {
@@ -58,6 +69,7 @@ public class HeaderExchangeClient implements ExchangeClient {
         this.channel = new HeaderExchangeChannel(client);
 
         if (startTimer) {
+            //启用重连和心跳定时器
             URL url = client.getUrl();
             startReconnectTask(url);
             startHeartBeatTask(url);
@@ -175,6 +187,11 @@ public class HeaderExchangeClient implements ExchangeClient {
         return channel.hasAttribute(key);
     }
 
+    /**
+     * 开启心跳任务
+     *
+     * @param url
+     */
     private void startHeartBeatTask(URL url) {
         if (!client.canHandleIdle()) {
             AbstractTimerTask.ChannelProvider cp = () -> Collections.singletonList(HeaderExchangeClient.this);
@@ -185,6 +202,11 @@ public class HeaderExchangeClient implements ExchangeClient {
         }
     }
 
+    /**
+     * 开启重连任务
+     *
+     * @param url
+     */
     private void startReconnectTask(URL url) {
         if (shouldReconnect(url)) {
             AbstractTimerTask.ChannelProvider cp = () -> Collections.singletonList(HeaderExchangeClient.this);

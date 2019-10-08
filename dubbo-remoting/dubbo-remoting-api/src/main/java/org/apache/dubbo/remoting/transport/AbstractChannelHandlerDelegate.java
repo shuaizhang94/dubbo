@@ -21,6 +21,9 @@ import org.apache.dubbo.remoting.Channel;
 import org.apache.dubbo.remoting.ChannelHandler;
 import org.apache.dubbo.remoting.RemotingException;
 
+/**
+ * 通道处理器装饰者
+ */
 public abstract class AbstractChannelHandlerDelegate implements ChannelHandlerDelegate {
 
     protected ChannelHandler handler;

@@ -21,16 +21,17 @@ import org.apache.dubbo.remoting.Channel;
 import org.apache.dubbo.remoting.RemotingException;
 
 /**
- * TelnetHandler
+ * telnet命令
  */
 @SPI
 public interface TelnetHandler {
 
     /**
-     * telnet.
-     *
-     * @param channel
-     * @param message
+     * tenlnet
+     * @param channel 通道
+     * @param message 消息
+     * @return
+     * @throws RemotingException
      */
     String telnet(Channel channel, String message) throws RemotingException;
 

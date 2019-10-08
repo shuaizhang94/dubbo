@@ -17,12 +17,18 @@
 package org.apache.dubbo.remoting.exchange;
 
 /**
- * Response
+ * 响应
  */
 public class Response {
 
+    /**
+     * 心跳事件
+     */
     public static final String HEARTBEAT_EVENT = null;
 
+    /**
+     * 只读事件
+     */
     public static final String READONLY_EVENT = "R";
 
     /**
@@ -80,16 +86,34 @@ public class Response {
      */
     public static final byte SERVER_THREADPOOL_EXHAUSTED_ERROR = 100;
 
+    /**
+     * 编号
+     */
     private long mId = 0;
 
+    /**
+     * dubbo 版本
+     */
     private String mVersion;
 
+    /**
+     * 状态
+     */
     private byte mStatus = OK;
 
+    /**
+     * 是否事件
+     */
     private boolean mEvent = false;
 
+    /**
+     * 错误消息
+     */
     private String mErrorMsg;
 
+    /**
+     * 结果
+     */
     private Object mResult;
 
     public Response() {

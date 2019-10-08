@@ -47,18 +47,31 @@ import static org.apache.dubbo.remoting.utils.UrlUtils.getHeartbeat;
 import static org.apache.dubbo.remoting.utils.UrlUtils.getIdleTimeout;
 
 /**
- * ExchangeServerImpl
+ * 基于消息头的信息交换服务端实现
  */
 public class HeaderExchangeServer implements ExchangeServer {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
+    /**
+     * 服务器
+     */
     private final Server server;
+
+    /**
+     * 是否关闭
+     */
     private AtomicBoolean closed = new AtomicBoolean(false);
 
+    /**
+     * 定时线程池
+     */
     private static final HashedWheelTimer IDLE_CHECK_TIMER = new HashedWheelTimer(new NamedThreadFactory("dubbo-server-idleCheck", true), 1,
             TimeUnit.SECONDS, TICKS_PER_WHEEL);
 
+    /**
+     * 连接关闭任务
+     */
     private CloseTimerTask closeTimerTask;
 
     public HeaderExchangeServer(Server server) {
@@ -104,6 +117,7 @@ public class HeaderExchangeServer implements ExchangeServer {
         if (timeout > 0) {
             final long max = (long) timeout;
             final long start = System.currentTimeMillis();
+            //将url设置为只读
             if (getUrl().getParameter(Constants.CHANNEL_SEND_READONLYEVENT_KEY, true)) {
                 sendChannelReadOnlyEvent();
             }
@@ -117,6 +131,7 @@ public class HeaderExchangeServer implements ExchangeServer {
             }
         }
         doClose();
+        //关闭服务器
         server.close(timeout);
     }
 
@@ -126,6 +141,7 @@ public class HeaderExchangeServer implements ExchangeServer {
     }
 
     private void sendChannelReadOnlyEvent() {
+        //广播只读时间 说明处于关闭中 不再接受新的请求
         Request request = new Request();
         request.setEvent(Request.READONLY_EVENT);
         request.setTwoWay(false);
@@ -150,6 +166,9 @@ public class HeaderExchangeServer implements ExchangeServer {
         cancelCloseTask();
     }
 
+    /**
+     * 取消注册任务
+     */
     private void cancelCloseTask() {
         if (closeTimerTask != null) {
             closeTimerTask.cancel();
@@ -265,7 +284,7 @@ public class HeaderExchangeServer implements ExchangeServer {
             CloseTimerTask closeTimerTask = new CloseTimerTask(cp, idleTimeoutTick, idleTimeout);
             this.closeTimerTask = closeTimerTask;
 
-            // init task and start timer.
+            //创建连接关闭任务
             IDLE_CHECK_TIMER.newTimeout(closeTimerTask, idleTimeoutTick, TimeUnit.MILLISECONDS);
         }
     }

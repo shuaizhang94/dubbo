@@ -227,7 +227,7 @@ public class RegistryProtocol implements Protocol {
         //获取注册中心注册器
         final Registry registry = getRegistry(originInvoker);
 
-        //获得注册提供者的URL
+        //获得注册提供者的UL
         final URL registeredProviderUrl = getRegisteredProviderUrl(providerUrl, registryUrl);
 
 

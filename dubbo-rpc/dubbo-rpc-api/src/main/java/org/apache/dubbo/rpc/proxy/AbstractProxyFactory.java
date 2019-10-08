@@ -53,10 +53,12 @@ public abstract class AbstractProxyFactory implements ProxyFactory {
                 }
             }
         }
+        //增加EchoService用于回声测试
         if (interfaces == null) {
             interfaces = new Class<?>[]{invoker.getInterface(), EchoService.class};
         }
 
+        //泛类接口
         if (!GenericService.class.isAssignableFrom(invoker.getInterface()) && generic) {
             int len = interfaces.length;
             Class<?>[] temp = interfaces;

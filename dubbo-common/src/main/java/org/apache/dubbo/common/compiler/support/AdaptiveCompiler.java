@@ -26,6 +26,9 @@ import org.apache.dubbo.common.extension.ExtensionLoader;
 @Adaptive
 public class AdaptiveCompiler implements Compiler {
 
+    /**
+     * 默认编译器
+     */
     private static volatile String DEFAULT_COMPILER;
 
     public static void setDefaultCompiler(String compiler) {
@@ -35,6 +38,7 @@ public class AdaptiveCompiler implements Compiler {
     @Override
     public Class<?> compile(String code, ClassLoader classLoader) {
         Compiler compiler;
+        //获取complier的extension loader
         ExtensionLoader<Compiler> loader = ExtensionLoader.getExtensionLoader(Compiler.class);
         String name = DEFAULT_COMPILER; // copy reference
         if (name != null && name.length() > 0) {

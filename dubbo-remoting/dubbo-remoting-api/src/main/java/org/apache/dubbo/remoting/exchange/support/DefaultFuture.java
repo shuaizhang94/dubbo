@@ -40,28 +40,63 @@ import static org.apache.dubbo.common.constants.CommonConstants.DEFAULT_TIMEOUT;
 import static org.apache.dubbo.common.constants.CommonConstants.TIMEOUT_KEY;
 
 /**
- * DefaultFuture.
+ * 默认Future
  */
 public class DefaultFuture extends CompletableFuture<Object> {
 
     private static final Logger logger = LoggerFactory.getLogger(DefaultFuture.class);
 
+    /**
+     * 通道集合 key:请求编号 value:通道
+     */
     private static final Map<Long, Channel> CHANNELS = new ConcurrentHashMap<>();
 
+    /**
+     * Future集合 key:请求编号 value:通道
+     */
     private static final Map<Long, DefaultFuture> FUTURES = new ConcurrentHashMap<>();
 
+    /**
+     * 定时器
+     */
     public static final Timer TIME_OUT_TIMER = new HashedWheelTimer(
             new NamedThreadFactory("dubbo-future-timeout", true),
             30,
             TimeUnit.MILLISECONDS);
 
-    // invoke id.
+    /**
+     * 请求编号
+     */
     private final Long id;
+
+    /**
+     * 通道
+     */
     private final Channel channel;
+
+    /**
+     * 请求
+     */
     private final Request request;
+
+    /**
+     * 超时时间
+     */
     private final int timeout;
+
+    /**
+     * 起始时间
+     */
     private final long start = System.currentTimeMillis();
+
+    /**
+     * 发送请求时间
+     */
     private volatile long sent;
+
+    /**
+     * 超时回调
+     */
     private Timeout timeoutCheckTask;
 
     private DefaultFuture(Channel channel, Request request, int timeout) {
@@ -75,7 +110,9 @@ public class DefaultFuture extends CompletableFuture<Object> {
     }
 
     /**
-     * check time out of the future
+     * 超时检测
+     *
+     * @param future
      */
     private static void timeoutCheck(DefaultFuture future) {
         TimeoutCheckTask task = new TimeoutCheckTask(future.getId());
@@ -83,32 +120,43 @@ public class DefaultFuture extends CompletableFuture<Object> {
     }
 
     /**
-     * init a DefaultFuture
-     * 1.init a DefaultFuture
-     * 2.timeout check
+     * 创建Future
      *
-     * @param channel channel
-     * @param request the request
-     * @param timeout timeout
-     * @return a new DefaultFuture
+     * @param channel
+     * @param request
+     * @param timeout
+     * @return
      */
     public static DefaultFuture newFuture(Channel channel, Request request, int timeout) {
         final DefaultFuture future = new DefaultFuture(channel, request, timeout);
-        // timeout check
+        //超时检测
         timeoutCheck(future);
         return future;
     }
 
+    /**
+     * 根据请求ID获取future
+     *
+     * @param id
+     * @return
+     */
     public static DefaultFuture getFuture(long id) {
         return FUTURES.get(id);
     }
 
+    /**
+     * 判断是否有未结束的channel
+     *
+     * @param channel
+     * @return
+     */
     public static boolean hasFuture(Channel channel) {
         return CHANNELS.containsValue(channel);
     }
 
     public static void sent(Channel channel, Request request) {
         DefaultFuture future = FUTURES.get(request.getId());
+        //设置发送请求时间
         if (future != null) {
             future.doSent();
         }
@@ -141,8 +189,16 @@ public class DefaultFuture extends CompletableFuture<Object> {
         received(channel, response, false);
     }
 
+    /**
+     * 处理响应结果
+     *
+     * @param channel
+     * @param response
+     * @param timeout
+     */
     public static void received(Channel channel, Response response, boolean timeout) {
         try {
+            //移除future
             DefaultFuture future = FUTURES.remove(response.getId());
             if (future != null) {
                 Timeout t = future.timeoutCheckTask;
@@ -159,6 +215,7 @@ public class DefaultFuture extends CompletableFuture<Object> {
                         + " -> " + channel.getRemoteAddress()));
             }
         } finally {
+            //移除channel
             CHANNELS.remove(response.getId());
         }
     }
@@ -212,6 +269,9 @@ public class DefaultFuture extends CompletableFuture<Object> {
         return timeout;
     }
 
+    /**
+     * 设置发送请求时间
+     */
     private void doSent() {
         sent = System.currentTimeMillis();
     }
@@ -239,16 +299,16 @@ public class DefaultFuture extends CompletableFuture<Object> {
 
         @Override
         public void run(Timeout timeout) {
+            //已完成 退出
             DefaultFuture future = DefaultFuture.getFuture(requestID);
             if (future == null || future.isDone()) {
                 return;
             }
-            // create exception response.
+            // 创建超时response
             Response timeoutResponse = new Response(future.getId());
-            // set timeout status.
             timeoutResponse.setStatus(future.isSent() ? Response.SERVER_TIMEOUT : Response.CLIENT_TIMEOUT);
             timeoutResponse.setErrorMessage(future.getTimeoutMessage(true));
-            // handle response.
+            //移除channel和future
             DefaultFuture.received(future.getChannel(), timeoutResponse, true);
 
         }

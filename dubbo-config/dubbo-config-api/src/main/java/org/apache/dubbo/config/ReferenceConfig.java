@@ -221,6 +221,7 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
         // get consumer's global configuration
         checkDefault();
         this.refresh();
+        //泛化接口
         if (getGeneric() == null && getConsumer() != null) {
             setGeneric(getConsumer().getGeneric());
         }
@@ -233,9 +234,12 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
             } catch (ClassNotFoundException e) {
                 throw new IllegalStateException(e.getMessage(), e);
             }
+            //检查接口和方法
             checkInterfaceAndMethods(interfaceClass, methods);
         }
+        //解析文件
         resolveFile();
+        //检查应用配置
         checkApplication();
         checkMetadataReport();
     }
@@ -326,6 +330,7 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
             }
         }
 
+        //系统变量作为注册中心
         String hostToRegistry = ConfigUtils.getSystemProperty(DUBBO_IP_TO_REGISTRY);
         if (StringUtils.isEmpty(hostToRegistry)) {
             hostToRegistry = NetUtils.getLocalHost();
@@ -639,9 +644,11 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
     }
 
     private void resolveFile() {
+        //直连提供者 通过-D参数指定
         String resolve = System.getProperty(interfaceName);
         String resolveFile = null;
         if (StringUtils.isEmpty(resolve)) {
+            //通过文件方式指定
             resolveFile = System.getProperty("dubbo.resolve.file");
             if (StringUtils.isEmpty(resolveFile)) {
                 File userResolveFile = new File(new File(System.getProperty("user.home")), "dubbo-resolve.properties");

@@ -27,9 +27,9 @@ public interface Compiler {
     /**
      * 编译代码
      *
-     * @param code
-     * @param classLoader
-     * @return
+     * @param code java代码
+     * @param classLoader 类加载器
+     * @return 编译后的class
      */
     Class<?> compile(String code, ClassLoader classLoader);
 

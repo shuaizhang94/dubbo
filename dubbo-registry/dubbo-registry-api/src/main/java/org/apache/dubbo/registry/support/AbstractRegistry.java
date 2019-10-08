@@ -65,33 +65,69 @@ import static org.apache.dubbo.registry.Constants.REGISTRY_FILESAVE_SYNC_KEY;
  */
 public abstract class AbstractRegistry implements Registry {
 
-    // URL address separator, used in file cache, service provider URL separation
+    /**
+     * URL分隔符 用于文件中，服务提供者的分割
+     */
     private static final char URL_SEPARATOR = ' ';
-    // URL address separated regular expression for parsing the service provider URL list in the file cache
+
+    /**
+     * URL分隔符表达式
+     */
     private static final String URL_SPLIT = "\\s+";
-    // Max times to retry to save properties to local cache file
+
+    /**
+     *
+     */
     private static final int MAX_RETRY_TIMES_SAVE_PROPERTIES = 3;
     // Log output
     protected final Logger logger = LoggerFactory.getLogger(getClass());
-    // Local disk cache, where the special key value.registries records the list of registry centers, and the others are the list of notified service providers
+
+    /**
+     * 本地磁盘缓存
+     */
     private final Properties properties = new Properties();
-    // File cache timing writing
+
+    /**
+     * 缓存写入线程池
+     */
     private final ExecutorService registryCacheExecutor = Executors.newFixedThreadPool(1, new NamedThreadFactory("DubboSaveRegistryCache", true));
-    // Is it synchronized to save the file
+    /**
+     * 是否同步保存磁盘
+     */
     private final boolean syncSaveFile;
+    /**
+     * 数据版本号
+     */
     private final AtomicLong lastCacheChanged = new AtomicLong();
     private final AtomicInteger savePropertiesRetryTimes = new AtomicInteger();
+
+    /**
+     * 已注册的URL
+     */
     private final Set<URL> registered = new ConcurrentHashSet<>();
+
+    /**
+     * 已订阅的URL监听器
+     */
     private final ConcurrentMap<URL, Set<NotifyListener>> subscribed = new ConcurrentHashMap<>();
+    /**
+     * 已通知的URL
+     */
     private final ConcurrentMap<URL, Map<String, List<URL>>> notified = new ConcurrentHashMap<>();
+    /**
+     * 注册中心地址
+     */
     private URL registryUrl;
-    // Local disk cache file
+    /**
+     * 本地磁盘缓存
+     */
     private File file;
 
     public AbstractRegistry(URL url) {
         setUrl(url);
         // Start file save timer
         syncSaveFile = url.getParameter(REGISTRY_FILESAVE_SYNC_KEY, false);
+        //获得或创建本地缓存文件
         String filename = url.getParameter(FILE_KEY, System.getProperty("user.home") + "/.dubbo/dubbo-registry-" + url.getParameter(APPLICATION_KEY) + "-" + url.getAddress() + ".cache");
         File file = null;
         if (ConfigUtils.isNotEmpty(filename)) {
@@ -103,10 +139,12 @@ public abstract class AbstractRegistry implements Registry {
             }
         }
         this.file = file;
-        // When starting the subscription center,
-        // we need to read the local cache file for future Registry fault tolerance processing.
+        //加载文件缓存到内存
         loadProperties();
+        //通知监听器，url变化结果
         notify(url.getBackupUrls());
+        //数据流向 启动时 本地文件->properties
+        //地址发生变更时 注册中心->properties->本地文件
     }
 
     protected static List<URL> filterEmpty(URL url, List<URL> urls) {
@@ -279,6 +317,7 @@ public abstract class AbstractRegistry implements Registry {
         if (logger.isInfoEnabled()) {
             logger.info("Register: " + url);
         }
+        //抽象类只维护本地列表 真正的实现在failbackRegistry
         registered.add(url);
     }
 
@@ -290,6 +329,7 @@ public abstract class AbstractRegistry implements Registry {
         if (logger.isInfoEnabled()) {
             logger.info("Unregister: " + url);
         }
+        //抽象类只维护本地列表 真正的实现在failbackRegistry
         registered.remove(url);
     }
 
@@ -351,6 +391,11 @@ public abstract class AbstractRegistry implements Registry {
         }
     }
 
+    /**
+     * 通知监听器 URL的变化
+     *
+     * @param urls
+     */
     protected void notify(List<URL> urls) {
         if (CollectionUtils.isEmpty(urls)) {
             return;

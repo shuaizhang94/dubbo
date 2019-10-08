@@ -36,7 +36,7 @@ import static org.apache.dubbo.common.constants.CommonConstants.DEFAULT_TIMEOUT;
 import static org.apache.dubbo.common.constants.CommonConstants.TIMEOUT_KEY;
 
 /**
- * ExchangeReceiver
+ * 基于消息头的信息交换通道实现类
  */
 final class HeaderExchangeChannel implements ExchangeChannel {
 
@@ -44,8 +44,14 @@ final class HeaderExchangeChannel implements ExchangeChannel {
 
     private static final String CHANNEL_KEY = HeaderExchangeChannel.class.getName() + ".CHANNEL";
 
+    /**
+     * 通道
+     */
     private final Channel channel;
 
+    /**
+     * 是否关闭
+     */
     private volatile boolean closed = false;
 
     HeaderExchangeChannel(Channel channel) {
@@ -55,6 +61,12 @@ final class HeaderExchangeChannel implements ExchangeChannel {
         this.channel = channel;
     }
 
+    /**
+     * 创建HeaderExchangeChannel
+     *
+     * @param ch
+     * @return
+     */
     static HeaderExchangeChannel getOrAddChannel(Channel ch) {
         if (ch == null) {
             return null;
@@ -69,27 +81,47 @@ final class HeaderExchangeChannel implements ExchangeChannel {
         return ret;
     }
 
+    /**
+     * 移除HeaderExchangeChannel
+     *
+     * @param ch
+     */
     static void removeChannelIfDisconnected(Channel ch) {
         if (ch != null && !ch.isConnected()) {
             ch.removeAttribute(CHANNEL_KEY);
         }
     }
 
+    /**
+     * 发送请求
+     *
+     * @param message
+     * @throws RemotingException
+     */
     @Override
     public void send(Object message) throws RemotingException {
         send(message, false);
     }
 
+    /**
+     * 发送请求
+     *
+     * @param message
+     * @param sent    是否已经发送到Socket
+     * @throws RemotingException
+     */
     @Override
     public void send(Object message, boolean sent) throws RemotingException {
         if (closed) {
             throw new RemotingException(this.getLocalAddress(), null, "Failed to send message " + message + ", cause: The channel " + this + " is closed!");
         }
+        //如果是request 直接发送
         if (message instanceof Request
                 || message instanceof Response
                 || message instanceof String) {
             channel.send(message, sent);
         } else {
+            //否则 创建request再发送
             Request request = new Request();
             request.setVersion(Version.getProtocolVersion());
             request.setTwoWay(false);
@@ -98,11 +130,26 @@ final class HeaderExchangeChannel implements ExchangeChannel {
         }
     }
 
+    /**
+     * 请求
+     *
+     * @param request
+     * @return
+     * @throws RemotingException
+     */
     @Override
     public CompletableFuture<Object> request(Object request) throws RemotingException {
         return request(request, channel.getUrl().getPositiveParameter(TIMEOUT_KEY, DEFAULT_TIMEOUT));
     }
 
+    /**
+     * 请求
+     *
+     * @param request
+     * @param timeout
+     * @return
+     * @throws RemotingException
+     */
     @Override
     public CompletableFuture<Object> request(Object request, int timeout) throws RemotingException {
         if (closed) {
@@ -111,10 +158,13 @@ final class HeaderExchangeChannel implements ExchangeChannel {
         // create request.
         Request req = new Request();
         req.setVersion(Version.getProtocolVersion());
+        //twio way标识需要响应
         req.setTwoWay(true);
         req.setData(request);
+        //创建future
         DefaultFuture future = DefaultFuture.newFuture(channel, req, timeout);
         try {
+            //发送
             channel.send(req);
         } catch (RemotingException e) {
             future.cancel();
@@ -137,7 +187,11 @@ final class HeaderExchangeChannel implements ExchangeChannel {
         }
     }
 
-    // graceful close
+    /**
+     * 优雅关闭
+     *
+     * @param timeout
+     */
     @Override
     public void close(int timeout) {
         if (closed) {
@@ -145,6 +199,7 @@ final class HeaderExchangeChannel implements ExchangeChannel {
         }
         closed = true;
         if (timeout > 0) {
+            //等待请求完成
             long start = System.currentTimeMillis();
             while (DefaultFuture.hasFuture(channel)
                     && System.currentTimeMillis() - start < timeout) {
@@ -155,6 +210,7 @@ final class HeaderExchangeChannel implements ExchangeChannel {
                 }
             }
         }
+        //关闭
         close();
     }
 

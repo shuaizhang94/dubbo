@@ -22,39 +22,35 @@ import org.apache.dubbo.remoting.RemotingException;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * ExchangeChannel. (API/SPI, Prototype, ThreadSafe)
+ * 信息交换接口
  */
 public interface ExchangeChannel extends Channel {
 
     /**
-     * send request.
-     *
+     * 发送请求
      * @param request
-     * @return response future
+     * @return
      * @throws RemotingException
      */
     CompletableFuture<Object> request(Object request) throws RemotingException;
 
     /**
-     * send request.
-     *
+     * 发送请求
      * @param request
      * @param timeout
-     * @return response future
+     * @return
      * @throws RemotingException
      */
     CompletableFuture<Object> request(Object request, int timeout) throws RemotingException;
 
     /**
-     * get message handler.
-     *
-     * @return message handler
+     * 获得信息交换处理器
+     * @return
      */
     ExchangeHandler getExchangeHandler();
 
     /**
-     * graceful close.
-     *
+     * 优雅关闭
      * @param timeout
      */
     @Override

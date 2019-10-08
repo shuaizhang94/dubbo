@@ -22,22 +22,22 @@ import java.net.InetSocketAddress;
 import java.util.Collection;
 
 /**
- * ExchangeServer. (API/SPI, Prototype, ThreadSafe)
+ * 信息交换服务端接口
  */
 public interface ExchangeServer extends Server {
 
     /**
-     * get channels.
+     * 获得信息交换处理器
      *
-     * @return channels
+     * @return
      */
     Collection<ExchangeChannel> getExchangeChannels();
 
     /**
-     * get channel.
+     * 根据地址获取信息交换处理器
      *
      * @param remoteAddress
-     * @return channel
+     * @return
      */
     ExchangeChannel getExchangeChannel(InetSocketAddress remoteAddress);
 
